@@ -1,3 +1,10 @@
+"""
+Image Processor
+@repository: `https://github.com/ngcuongzth/BaseReaderPython`
+@document&libs: OpenCV
+@last&update: 2024/06/20
+"""
+
 import cv2
 from core.InitModels import init_dnn_superres
 import numpy as np
@@ -6,14 +13,23 @@ import imutils
 
 
 class ImageProcessor:
-    def __init__(self):
-        self.superres = init_dnn_superres()
+    def __init__(self, is_init_dnn_superres=True):
 
-    def useSuperResolution(self, image: np.ndarray, blurSize: int):
+        if is_init_dnn_superres:
+            self.superres = init_dnn_superres()
+            self.is_init_dnn_superres = True
+        else:
+            self.is_init_dnn_superres = False
+
+    def useSuperResolution(self, image: np.ndarray):
         """cai thien chi tiet cua anh"""
-        image = self.superres.upsample(image)
-        # blur = cv2.medianBlur(image, (blurSize))
-        return image
+
+        if self.is_init_dnn_superres:
+            image = self.superres.upsample(image)
+            # blur = cv2.medianBlur(image, (blurSize))
+            return image
+        else:
+            raise Exception("is_init_dnn_superres ? --- just-ngcuong")
 
     def automatic_brightness_and_contrast(self, image, clip_hist_percent=1):
         """ "tu dong chinh sang/tuong phan anh

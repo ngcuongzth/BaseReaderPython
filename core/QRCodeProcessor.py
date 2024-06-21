@@ -1,9 +1,17 @@
+"""
+QRCode Processor
+@repository: `https://github.com/ngcuongzth/BaseReaderPython`
+@document&libs: OpenCV, Qreader, Zxingcpp, Pyzbar, WechatQRCode
+@last&update: 2024/06/20
+"""
+
 from qreader.qreader import QReader
 import cv2
 from core.InitModels import init_wechatqrcode
 import numpy as np
 from pyzbar.pyzbar import decode, ZBarSymbol
 import zxingcpp
+from core.ImageProcessor import ImageProcessor
 
 
 class QRCodeProcessor:
@@ -11,10 +19,11 @@ class QRCodeProcessor:
         self.accept_init_qreader = is_init_qreader
         if is_init_qreader:
             self.qreader = QReader(model_size="n")
-            image_temp = cv2.imread(r"./assets/temp.png")
+            image_temp = cv2.imread("core/assets/temp.png")
             self.qreader.detector.detect(image=image_temp, is_bgr=False)
             self.accept_init_qreader = True
         self.wechat_qrcode_detector = init_wechatqrcode()
+        self.processor = ImageProcessor(is_init_dnn_superres=True)
 
     def useQReader(self, image: np.ndarray, return_detections: bool = False):
         """
@@ -66,3 +75,33 @@ class QRCodeProcessor:
         if len(data_decodeded) > 0:
             return data_decodeded[0].text
         return None
+
+    def useLoopReader(self, image: np.ndarray, iterations: int = 2, type: int = 1):
+        # def useLoopReader(self, image: np.ndarray):
+        """pass image: processed"""
+        if type == 1:
+            # read by QReader first
+            image = self.processor.useSuperResolution(image)
+            data_QReader, rect = self.useQReader(image, return_detections=True)
+
+            if data_QReader:
+                return data_QReader
+            else:
+                if rect is not None and len(rect) == 4:
+                    roi_image = self.processor.useRoiImage(image, rect, 10)
+                    # use roi to read by zxingcpp
+                    data_ZxingCpp = self.useZxingCpp(roi_image)
+                    if data_ZxingCpp:
+                        return data_ZxingCpp
+                    else:
+                        data_WeChat = self.useWeChatQRCode(roi_image)
+                        if data_WeChat:
+                            return data_WeChat
+                        else:
+                            data_Pyzbar = self.usePyzbar(roi_image)
+                            if data_Pyzbar:
+                                return data_Pyzbar
+                            else:
+                                return None
+                else:
+                    return None
