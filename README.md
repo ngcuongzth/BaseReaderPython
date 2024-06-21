@@ -54,7 +54,7 @@
 - **useErosion**: kỹ thuật ăn mòn ảnh
 - **useDilation**: kỹ thuật giãn nở ảnh 
 - **useOpening**: kỹ thuật kết hợp ăn mòn (1) và giãn nở (2)
-- **useClosing**: kỹ thuật kết hợp ăn mòn (2) và giãn nở (3)
+- **useClosing**: kỹ thuật kết hợp ăn mòn (2) và giãn nở (1)
 - **useThreshBinary**: sử dụng `ThreshBinary` và `ThreshBinaryINV`
 
 #### Tìm viền và các hàm khác
@@ -143,7 +143,7 @@ if data_decoded:
 # ouput: => data and rect:  SD Team [108 112 408 411]
 ```
 
-![][def3]
+![][def]
 
 ### `Nhận xét chung:` `useQreader()` cho trải khả năng đọc mã tốt hơn so với thư viện khác, đổi lại tốc độ của nó chậm hơn `~0.2s` thay vì `< 0.1s` như các thư viện khác, tùy dự án chúng ta sẽ phải `custom` lại
 
@@ -155,6 +155,6 @@ if data_decoded:
 
 
 
-[def]: https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNG1ncG1pZWt1YTBxdXVjMWtydTJmcTkyb2Mxa2h6aWQ4MWhnOHp5YSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/4pMX5rJ4PYAEM/giphy.gif
-[def2]: https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif?cid=82a1493bqchjujr3870tnynfa7bvsqci9mmldyfowzglma49&ep=v1_gifs_trending&rid=giphy.gif&ct=g
-[def3]: https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXBkYzJydDVsYXlscW5lMnUycTRzd3lwY252cjl2NjJ2NXlhYzRsMSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3o8doT9BL7dgtolp7O/giphy.gif
+[def]: https://media.giphy.com/media/v1.Y2lkPTc5MGINjExNG1ncG1pZWt1YTBxdXVjMWtydTJmcTkyb2Mxa2h6aWQ4MWhnOHp5YSZlcD12MV9naWZzXNlYXJjaCZjdD1n/4pMX5rJ4PYAEM/giphy.gif
+[def2]: https://media.giphy.com/media/lq2K5jinAlChoCLS/giphy.gif?cid=82a149bqchjujr870tnynfa7bvsqci9mmldyfowzglma49&ep=v1_gifs_trending&rid=giphy.gif&ct=g
+[def]: https://media.giphy.com/media/v1.Y2lkPTc5MGINjExaXBkYzJydDVsYXlscW5lMnUycTRzdlwY252cjl2NjJ2NXlhYzRsMSZlcD12MV9naWZzXNlYXJjaCZjdD1n/o8doT9BL7dgtolp7O/giphy.gif
