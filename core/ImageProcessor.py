@@ -22,7 +22,7 @@ class ImageProcessor:
             self.is_init_dnn_superres = False
 
     def useSuperResolution(self, image: np.ndarray):
-        """cai thien chi tiet cua anh"""
+        """Cai thien chi tiet anh"""
 
         if self.is_init_dnn_superres:
             image = self.superres.upsample(image)

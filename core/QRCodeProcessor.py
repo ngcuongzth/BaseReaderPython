@@ -15,7 +15,7 @@ from core.ImageProcessor import ImageProcessor
 
 
 class QRCodeProcessor:
-    def __init__(self, is_init_qreader: bool):
+    def __init__(self, is_init_qreader: bool = False):
         self.accept_init_qreader = is_init_qreader
         if is_init_qreader:
             self.qreader = QReader(model_size="n")
