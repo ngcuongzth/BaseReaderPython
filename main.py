@@ -13,19 +13,35 @@
 
 from core.ImageProcessor import ImageProcessor
 from core.QRCodeProcessor import QRCodeProcessor
+import time
 
 Processor = ImageProcessor(is_init_dnn_superres=True)
 Reader = QRCodeProcessor(is_init_qreader=True)
 # is_init_qreader: có sử dụng qreader hay không, mặc định là không vì nó tốn thời gian khởi tạo, đọc mã chậm hơn các thư viện khác, đổi lại nó đọc được mã khó và chính xác hơn là lấy được rect và sử dụng roi image
 
 # read image
-image = Processor.readImage("./images/qrcode/qrcode.png")
+image = Processor.readImage("./images/test/test.png")
+
+# Processor.showImage("test", image)
 # process with super solution (option)
 image_processed = Processor.useSuperResolution(image)
-data_decoded = Reader.useQReader(image_processed)
-print("data:", data_decoded)  # output: ->  data: SD Team
 
-data_decoded, rect = Reader.useQReader(image_processed, return_detections=True)
-if data_decoded:
-    print("data and rect: ", data_decoded, rect)
-# ouput: => data and rect:  SD Team [108 112 408 411]
+detection = Reader.getRectQReader(image_processed)
+# print(detection)
+# data = Reader.useDecodeQReader(image_processed, detection)
+# print(data)
+
+# print("--------test---------")
+
+# get size
+# size = Processor.getSizeImage(image_processed)
+# print(size)
+# 960 x 1280
+# try crop
+
+rect = 466, 195, 672, 401  # x1,y1,x2,y2
+crop = Processor.cropImage(image_processed, rect, gap=40)
+Processor.showImage("test", crop)
+print("start")
+data = Reader.useDecodeQReaderPyzbar(crop)
+print(data)

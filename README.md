@@ -1,4 +1,5 @@
 # [Github Repository - BaseReader](https://github.com/ngcuongzth/BaseReaderPython.git)
+## `date release:2024/06/21`
 
 ![](https://media.giphy.com/media/xT5LMywOTMWtK7iqSA/giphy.gif?cid=790b7611jqczv8h4ese9klj0b8hlm7km9u19ph8ottb9lhp7&ep=v1_gifs_search&rid=giphy.gif&ct=g)
 
@@ -16,7 +17,6 @@
 
 
     ![][def]
-
 
 
 ### Hỗ trợ các hàm tiện ích xử lý ảnh:

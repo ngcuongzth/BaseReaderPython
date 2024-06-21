@@ -81,10 +81,6 @@ class QRDetector:
         """
 
         image = _prepare_input(source=image, is_bgr=is_bgr)
-        # Predict
-
-        # print("start")
-        # stime = time.time()
 
         results = self.model.predict(
             source=image,
@@ -101,21 +97,11 @@ class QRDetector:
         assert (
             len(results) == 1
         ), f"Expected 1 result if no batch sent, got {len(results)}"
-
-        # print("end")
-        # print(time.time() - stime)
-
-        # print("start yolooooooooo", time.time() - stime)
         results = _yolo_v8_results_to_dict(results=results[0], image=image)
-        # results = _yolo_v8_results_to_dict(results=[], image=image)
-
-        # print("doneeeeee yolooooooooo", time.time() - stime)
-
         if "legacy" in kwargs and kwargs["legacy"]:
             return self._parse_legacy_results(results=results, **kwargs)
 
-        # print("doneeeeeeee detecttttttttttt", time.time() - stime)
-
+        # print("results", results)
         return results
 
     def _parse_legacy_results(

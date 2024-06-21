@@ -115,13 +115,12 @@ class ImageProcessor:
             )
         return image
 
-    def cropImage(self, image, rect: tuple):
-        # rect : (x1,x2,y1,y2)
-        x1, x2, y1, y2 = rect
+    def cropImage(self, image, rect: tuple, gap: int = 10):
+        x1, y1, x2, y2 = rect
         if len(rect) != 4:
             raise Exception("Need pass enough 4 points of rect (x1,x2,y1,y2)")
         else:
-            crop = image[x1:x2, y1:y2]
+            crop = image[y1 - gap : y2 + gap, x1 - gap : x2 + gap]
             return crop
 
     def rotateImage(self, image: np.ndarray, angle: int, scaleSize: float = 1.0):

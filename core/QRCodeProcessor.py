@@ -105,3 +105,19 @@ class QRCodeProcessor:
                                 return None
                 else:
                     return None
+
+    def getRectQReader(self, image: np.ndarray):
+        rect = self.qreader.detect(image=image)
+        if rect:
+            # rect = rect[0]["bbox_xyxy"]
+            # x1, y1, x2, y2 = rect
+            # return tuple([x1, y1, x2, y2])
+            # return rect[0]
+            return rect[0]["bbox_xyxy"]
+        return None
+
+    def useDecodeQReaderPyzbar(self, cropImage: np.ndarray):
+        return self.qreader.decodeQRZbarCrop(cropImage)
+
+    def useDecodeQReaderZxing(self, cropImage: np.ndarray):
+        return self.qreader.decodeQRZxingCrop(cropImage)
