@@ -1,3 +1,10 @@
+"""
+Image Processor
+@repository: `https://github.com/ngcuongzth/BaseReaderPython`
+@document&libs: OpenCV
+@last&update: 2024/06/20
+"""
+
 import cv2
 from core.InitModels import init_dnn_superres
 import numpy as np
@@ -6,14 +13,23 @@ import imutils
 
 
 class ImageProcessor:
-    def __init__(self):
-        self.superres = init_dnn_superres()
+    def __init__(self, is_init_dnn_superres=True):
 
-    def useSuperResolution(self, image: np.ndarray, blurSize: int):
-        """cai thien chi tiet cua anh"""
-        image = self.superres.upsample(image)
-        # blur = cv2.medianBlur(image, (blurSize))
-        return image
+        if is_init_dnn_superres:
+            self.superres = init_dnn_superres()
+            self.is_init_dnn_superres = True
+        else:
+            self.is_init_dnn_superres = False
+
+    def useSuperResolution(self, image: np.ndarray):
+        """Cai thien chi tiet anh"""
+
+        if self.is_init_dnn_superres:
+            image = self.superres.upsample(image)
+            # blur = cv2.medianBlur(image, (blurSize))
+            return image
+        else:
+            raise Exception("is_init_dnn_superres ? --- just-ngcuong")
 
     def automatic_brightness_and_contrast(self, image, clip_hist_percent=1):
         """ "tu dong chinh sang/tuong phan anh
@@ -99,13 +115,12 @@ class ImageProcessor:
             )
         return image
 
-    def cropImage(self, image, rect: tuple):
-        # rect : (x1,x2,y1,y2)
-        x1, x2, y1, y2 = rect
+    def cropImage(self, image, rect: tuple, gap: int = 10):
+        x1, y1, x2, y2 = rect
         if len(rect) != 4:
             raise Exception("Need pass enough 4 points of rect (x1,x2,y1,y2)")
         else:
-            crop = image[x1:x2, y1:y2]
+            crop = image[y1 - gap : y2 + gap, x1 - gap : x2 + gap]
             return crop
 
     def rotateImage(self, image: np.ndarray, angle: int, scaleSize: float = 1.0):

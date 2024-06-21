@@ -1,54 +1,47 @@
-from toolkit.Toolkit import Toolkit
+# from core.ImageProcessor import ImageProcessor
+
+# processor = ImageProcessor()
+# import cv2
+# import numpy as np
+
+# image = cv2.imread("./images/test/origin.png")
+# template = cv2.imread("./images/test/crop.png")
+
+# result = processor.templateMatching(image, template, 1, is_show=True)
+# print(result)
+
+
 from core.ImageProcessor import ImageProcessor
+from core.QRCodeProcessor import QRCodeProcessor
+import time
 
+Processor = ImageProcessor(is_init_dnn_superres=True)
+Reader = QRCodeProcessor(is_init_qreader=True)
+# is_init_qreader: có sử dụng qreader hay không, mặc định là không vì nó tốn thời gian khởi tạo, đọc mã chậm hơn các thư viện khác, đổi lại nó đọc được mã khó và chính xác hơn là lấy được rect và sử dụng roi image
 
-processor = ImageProcessor()
-# image = processor.readImage("./images/test/origin.png")
-# processor.showImage("image", image)
-# h, w = processor.getSizeImage(image)
+# read image
+image = Processor.readImage("./images/test/test.png")
 
-# print(h, w)
+# Processor.showImage("test", image)
+# process with super solution (option)
+image_processed = Processor.useSuperResolution(image)
 
-# crop = processor.cropImage(image, (0, 250, 0, 350))
-# processor.saveImage("./images/test/crop.png", crop)
-# processor.showImage("crop", crop)
+detection = Reader.getRectQReader(image_processed)
+# print(detection)
+# data = Reader.useDecodeQReader(image_processed, detection)
+# print(data)
 
+# print("--------test---------")
 
-import cv2
-import numpy as np
+# get size
+# size = Processor.getSizeImage(image_processed)
+# print(size)
+# 960 x 1280
+# try crop
 
-# Đọc ảnh chính và mẫu
-image = cv2.imread("./images/test/origin.png")
-template = cv2.imread("./images/test/crop.png")
-
-# processor.showImage("origin", image)
-# processor.showImage("template", template)
-
-# # Chuyển ảnh chính sang grayscale (ảnh xám)
-# # gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-# # Lấy kích thước của mẫu
-# threshold = 0.9
-# w, h = processor.getSizeImage(template)
-
-# # Thực hiện template matching
-# result = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
-
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-
-# x1, y1 = max_loc
-# x2, y2 = x1 + w, y1 + h
-
-# if max_val >= threshold:
-#     cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 1)
-
-# print(x1, y1, x2, y2)
-
-# # Hiển thị ảnh kết quả
-# cv2.imshow("Detected", image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
-
-result = processor.templateMatching(image, template, 1, is_show=False)
-print(result)
+rect = 466, 195, 672, 401  # x1,y1,x2,y2
+crop = Processor.cropImage(image_processed, rect, gap=40)
+Processor.showImage("test", crop)
+print("start")
+data = Reader.useDecodeQReaderPyzbar(crop)
+print(data)

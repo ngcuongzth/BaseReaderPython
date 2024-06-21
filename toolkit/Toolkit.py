@@ -8,8 +8,8 @@ import time
 class Toolkit:
     def __init__(self):
         self.name = "Ultilities function"
-        self.Reader = QRCodeProcessor(is_init_qreader=False)
-        self.Processor = ImageProcessor()
+        self.Reader = QRCodeProcessor(is_init_qreader=True)
+        self.Processor = ImageProcessor(is_init_dnn_superres=True)
         self.frame = None
         self.cap = None
 
@@ -24,7 +24,7 @@ class Toolkit:
     # ! OPEN CAMERA
     def openCamera(self, index: int = 0, always_detect: bool = False):
         self.cap = cv2.VideoCapture(index, cv2.CAP_DSHOW)
-        self.setFrameSize(1280, 960)
+        # self.setFrameSize(1280, 960)
         if not self.cap.isOpened():
             print("Can't connect camera")
             return
@@ -76,13 +76,28 @@ class Toolkit:
 
     #! CUSTOM READ HERE
     def readFrame(self, frame):
+        # data, detect = self.Reader.useQReader(frame, return_detections=True)
+        # if data is not None:
+        #     print("root data: ", data)
+        # else:
+        #     sr_frame = self.Processor.useSuperResolution(image=frame, blurSize=3)
+        #     data, detect = self.Reader.useQReader(sr_frame, return_detections=True)
+        #     if data is not None:
+        #         print("data sr: ", data)
+        #     else:
+        #         print("XXXXXXXXXXXXXXXXXXXXX")
+
         data, detect = self.Reader.useQReader(frame, return_detections=True)
         if data is not None:
-            print("root data: ", data)
-        else:
-            sr_frame = self.Processor.useSuperResolution(image=frame, blurSize=3)
-            data, detect = self.Reader.useQReader(sr_frame, return_detections=True)
-            if data is not None:
-                print("data sr: ", data)
+            print("done 1")
+            data = self.Reader.useLoopReader(frame)
+            if data:
+                print("done 2")
             else:
-                print("XXXXXXXXXXXXXXXXXXXXX")
+                print("xxxxxxxxxxxxxxx")
+        else:
+            data = self.Reader.useLoopReader(frame)
+            if data:
+                print("done 2")
+            else:
+                print("yyyyyyyyyyyyyyyyyy")

@@ -27,7 +27,6 @@
 `count_zxingcpp`:  97
 `average speed`:  0.3753384343835692
 
-
 ###### Recommend
 <!-- đối với dự án scan QRCode, ưu tiên sử dụng ZxingCpp -> WechatQRCode -> Qreader -->
 

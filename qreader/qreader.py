@@ -20,6 +20,7 @@ import cv2
 import numpy as np
 from pyzbar.pyzbar import Decoded, ZBarSymbol
 from pyzbar.pyzbar import decode as decodeQR
+import zxingcpp
 from qrdet import (
     BBOX_XYXY,
     CONFIDENCE,
@@ -158,6 +159,7 @@ class QReader:
 
         # Crop the image if a bounding box is given
         decodedQR = self._decode_qr_zbar(image=image, detection_result=detection_result)
+
         if len(decodedQR) > 0:
             # Take first result only
             decodeQRResult = decodedQR[0]
@@ -200,15 +202,17 @@ class QReader:
                     detection result (a dictionary with the keys 'confidence', 'bbox_xyxy', 'polygon_xy'...) and the
                     decoded QR code (or None if it can not be decoded). If return_detections is False, it will return
                     a tuple of strings with the decoded QR codes (or None if it can not be decoded).
-
         """
-        detections = self.detect(image=image, is_bgr=is_bgr)
-        # print(" ----- detections", detections)
 
-        decoded_qrs = tuple(
-            self.decode(image=image, detection_result=detection)
-            for detection in detections
-        )
+        # print("test here")
+        detections = self.detect(image=image, is_bgr=is_bgr)
+        # print("input", detections)
+
+        decoded_qrs = []
+        for detection in detections:
+            decoded_qr = self.decode(image=image, detection_result=detection)
+            decoded_qrs.append(decoded_qr)
+        decoded_qrs = tuple(decoded_qrs)
 
         if return_detections:
             return decoded_qrs, detections
@@ -272,6 +276,8 @@ class QReader:
         ],
     ) -> list[DecodeQRResult]:
         """
+
+
         Try to decode the QR code just with pyzbar, pre-processing the image if it fails in different ways that
         sometimes work.
         :param image: np.ndarray. The image to be read. It must be a np.ndarray (HxWxC) (uint8).
@@ -281,9 +287,15 @@ class QReader:
         :return: tuple. The decoded QR code in the zbar format.
         """
         # Crop the QR for bbox and quad
+        # print("rect", type(detection_result))
+
         cropped_bbox, _ = crop_qr(
             image=image, detection=detection_result, crop_key=BBOX_XYXY
         )
+
+        # print("hello", cropped_bbox)
+        # cv2.imshow("hello", cropped_bbox)
+        cv2.waitKey(0)
         cropped_quad, updated_detection = crop_qr(
             image=image, detection=detection_result, crop_key=PADDED_QUAD_XY
         )
@@ -380,7 +392,6 @@ class QReader:
                         image=sharpened_gray,
                         results=decodedQR,
                     )
-
         return []
 
     def __correct_perspective(
@@ -469,3 +480,168 @@ class QReader:
             if len(decodedQR) > 0:
                 return decodedQR
         return []
+
+    def __threshold_and_blur_decodings_custom(
+        self, image: np.ndarray, blur_kernel_sizes: tuple[tuple[int, int]] = ((3, 3),)
+    ) -> list[Decoded]:
+        """
+        Try to decode the QR code just with pyzbar, pre-processing the image with different blur and threshold
+        filters.
+        :param image: np.ndarray. The image to be read. It must be a 2D or 3D np.ndarray (HxW[xC]) (uint8).
+        :return: list[Decoded]. The decoded QR code/s in the zbar format. If it fails, it will return an empty list.
+        """
+
+        assert (
+            2 <= len(image.shape) <= 3
+        ), f"image must be 2D or 3D (HxW[xC]) (uint8). Got {image.shape}"
+
+        decodedQR = zxingcpp.read_barcodes(image)
+        if len(decodedQR) > 0:
+            return decodedQR[0].text
+        else:
+            # Try to binarize the image (Only works with 2D images)
+            if len(image.shape) == 2:
+                _, binary_image = cv2.threshold(
+                    image,
+                    thresh=0,
+                    maxval=255,
+                    type=cv2.THRESH_BINARY + cv2.THRESH_OTSU,
+                )
+                decodedQR = zxingcpp.read_barcodes(binary_image)
+                if len(decodedQR) > 0:
+                    return decodedQR[0].text
+
+                for kernel_size in blur_kernel_sizes:
+                    assert (
+                        isinstance(kernel_size, tuple) and len(kernel_size) == 2
+                    ), f"kernel_size must be a tuple of 2 elements. Got {kernel_size}"
+                    assert all(
+                        kernel_size[i] % 2 == 1 for i in range(2)
+                    ), f"kernel_size must be a tuple of odd elements. Got {kernel_size}"
+
+                    # If it not works, try to parse to sharpened grayscale
+                    blur_image = cv2.GaussianBlur(
+                        src=image, ksize=kernel_size, sigmaX=0
+                    )
+                    decodedQR = zxingcpp.read_barcodes(binary_image)
+                    if len(decodedQR) > 0:
+                        return decodedQR[0].text
+        return None
+
+    # custom
+
+    def decodeQRZbarCrop(self, image: np.ndarray):
+        for scale_factor in [1, 0.5, 1.5]:
+            if (
+                not all(25 < axis < 1024 for axis in image.shape[:2])
+                and scale_factor != 1
+            ):
+                continue
+
+            rescaled_image = cv2.resize(
+                src=image,
+                dsize=None,
+                fx=scale_factor,
+                fy=scale_factor,
+                interpolation=cv2.INTER_CUBIC,
+            )
+            decodedQR = decodeQR(image=rescaled_image, symbols=[ZBarSymbol.QRCODE])
+            if len(decodedQR) > 0:
+                return decodedQR[0].data.decode("utf-8")
+            # For QRs with black background and white foreground, try to invert the image
+            inverted_image = image = 255 - rescaled_image
+            decodedQR = decodeQR(inverted_image, symbols=[ZBarSymbol.QRCODE])
+            if len(decodedQR) > 0:
+                return decodedQR[0].data.decode("utf-8")
+
+            # If it not works, try to parse to grayscale (if it is not already)
+            if len(rescaled_image.shape) == 3:
+                assert (
+                    rescaled_image.shape[2] == 3
+                ), f"Image must be RGB or BGR, but it has {image.shape[2]} channels."
+                gray = cv2.cvtColor(rescaled_image, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = rescaled_image
+            decodedQR = self.__threshold_and_blur_decodings(
+                image=gray, blur_kernel_sizes=((5, 5), (7, 7))
+            )
+            if len(decodedQR) > 0:
+                return decodedQR[0].data.decode("utf-8")
+            if len(rescaled_image.shape) == 3:
+                # If it not works, try to sharpen the image
+                sharpened_gray = cv2.cvtColor(
+                    cv2.filter2D(src=rescaled_image, ddepth=-1, kernel=_SHARPEN_KERNEL),
+                    cv2.COLOR_RGB2GRAY,
+                )
+            else:
+                sharpened_gray = cv2.filter2D(
+                    src=rescaled_image, ddepth=-1, kernel=_SHARPEN_KERNEL
+                )
+            decodedQR = self.__threshold_and_blur_decodings(
+                image=sharpened_gray, blur_kernel_sizes=((3, 3),)
+            )
+            if len(decodedQR) > 0:
+                return decodedQR[0].data.decode("utf-8")
+        return None
+
+    def decodeQRZxingCrop(self, image: np.ndarray):
+        for scale_factor in [1, 0.5, 1.5]:
+            if (
+                not all(25 < axis < 1024 for axis in image.shape[:2])
+                and scale_factor != 1
+            ):
+                continue
+            rescaled_image = cv2.resize(
+                src=image,
+                dsize=None,
+                fx=scale_factor,
+                fy=scale_factor,
+                interpolation=cv2.INTER_CUBIC,
+            )
+            decodeQR = zxingcpp.read_barcodes(rescaled_image)
+            if len(decodeQR) > 0:
+                return decodeQR[0].text
+            else:
+                # For QRs with black background and white foreground, try to invert the image
+                inverted_image = image = 255 - rescaled_image
+                decodeQR = zxingcpp.read_barcodes(inverted_image)
+                if len(decodeQR) > 0:
+                    return decodeQR[0].text
+                else:
+                    # If it not works, try to parse to grayscale (if it is not already)
+                    if len(rescaled_image.shape) == 3:
+                        assert (
+                            rescaled_image.shape[2] == 3
+                        ), f"Image must be RGB or BGR, but it has {image.shape[2]} channels."
+                        gray = cv2.cvtColor(rescaled_image, cv2.COLOR_RGB2GRAY)
+                    else:
+                        gray = rescaled_image
+                        decodeQR = self.__threshold_and_blur_decodings_custom(
+                            image=gray, blur_kernel_sizes=((5, 5), (7, 7))
+                        )
+
+                        if len(decodeQR) > 0:
+                            return decodeQR[0].text
+                        else:
+                            if len(rescaled_image.shape) == 3:
+                                # If it not works, try to sharpen the image
+                                sharpened_gray = cv2.cvtColor(
+                                    cv2.filter2D(
+                                        src=rescaled_image,
+                                        ddepth=-1,
+                                        kernel=_SHARPEN_KERNEL,
+                                    ),
+                                    cv2.COLOR_RGB2GRAY,
+                                )
+                            else:
+                                sharpened_gray = cv2.filter2D(
+                                    src=rescaled_image,
+                                    ddepth=-1,
+                                    kernel=_SHARPEN_KERNEL,
+                                )
+                            decodeQR = self.__threshold_and_blur_decodings_custom(
+                                image=sharpened_gray, blur_kernel_sizes=((3, 3),)
+                            )
+                            if len(decodeQR) > 0:
+                                return decodeQR[0].text
+        return None

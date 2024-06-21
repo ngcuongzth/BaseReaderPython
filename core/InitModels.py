@@ -1,3 +1,9 @@
+"""
+Init Models
+@repository: `https://github.com/ngcuongzth/BaseReaderPython`
+@last&update: 2024/06/20
+"""
+
 import cv2
 
 
