@@ -1,7 +1,7 @@
 # [Github Repository - BaseReader](https://github.com/ngcuongzth/BaseReaderPython.git)
 ## `date release:2024/06/21`
 
-![](https://media.giphy.com/media/xT5LMywOTMWtK7iqSA/giphy.gif?cid=790b7611jqczv8h4ese9klj0b8hlm7km9u19ph8ottb9lhp7&ep=v1_gifs_search&rid=giphy.gif&ct=g)
+![][def3]
 
 ## BaseReader 
 - Sử dụng với mục đích xây dựng base chung cho dự án đọc mã (Datamatrix, QRCode, Barcode)
@@ -143,18 +143,26 @@ if data_decoded:
 # ouput: => data and rect:  SD Team [108 112 408 411]
 ```
 
-![][def]
+![][def4]
 
-### `Nhận xét chung:` `useQreader()` cho trải khả năng đọc mã tốt hơn so với thư viện khác, đổi lại tốc độ của nó chậm hơn `~0.2s` thay vì `< 0.1s` như các thư viện khác, tùy dự án chúng ta sẽ phải `custom` lại
+### `Nhận xét chung:` `useQreader()` cho trải khả năng đọc mã tốt hơn so với thư viện khác, đổi lại tốc độ của nó chậm hơn `~0.2s` thay vì `< 0.1s` như các thư viện khác, tùy dự án chúng ta sẽ  `custom` lại
 
 - **useQReader**: đọc mã bằng `qreader`
 - **useWeChatQRCode**: đọc mã bằng `WechatQRCode`
 - **usePyzbar**: đọc mã bằng `pyzbar`
 - **useZxingCpp**: đọc mã bằng `useZxingCpp`
 - **useLoopReader**: đọc mã với hàm loop (`custom`)
+- **getRectQReader**: lấy tọa độ của qrcode trong ảnh `(x1,y1,x2,y2)`
+- **useQReaderProcessorDecode**: đọc mã với hàm xử lý ảnh của `qreader`, đầu vào là một ảnh, đầu ra là dữ liệu
+
+
 
 
 
 [def]: https://media.giphy.com/media/v1.Y2lkPTc5MGINjExNG1ncG1pZWt1YTBxdXVjMWtydTJmcTkyb2Mxa2h6aWQ4MWhnOHp5YSZlcD12MV9naWZzXNlYXJjaCZjdD1n/4pMX5rJ4PYAEM/giphy.gif
-[def2]: https://media.giphy.com/media/lq2K5jinAlChoCLS/giphy.gif?cid=82a149bqchjujr870tnynfa7bvsqci9mmldyfowzglma49&ep=v1_gifs_trending&rid=giphy.gif&ct=g
+[def2]: https://media.giphy.com/media/Um3ljJl8jrnHy/giphy.gif?cid=790b7611njge3hnmfbejhl6o2dqr9a3ll8v3i9sktx9qbkgg&ep=v1_gifs_search&rid=giphy.gif&ct=g
+
 [def]: https://media.giphy.com/media/v1.Y2lkPTc5MGINjExaXBkYzJydDVsYXlscW5lMnUycTRzdlwY252cjl2NjJ2NXlhYzRsMSZlcD12MV9naWZzXNlYXJjaCZjdD1n/o8doT9BL7dgtolp7O/giphy.gif
+
+[def4]: https://media.giphy.com/media/JRE3AvLsSRXg360F6l/giphy.gif?cid=790b7611njge3hnmfbejhl6o2dqr9a3ll8v3i9sktx9qbkgg&ep=v1_gifs_search&rid=giphy.gif&ct=g
+[def3]: https://media.giphy.com/media/YFkpsHWCsNUUo/giphy.gif?cid=790b76112rxv4oztdntme277p6md8743qrnzoqvgaaiaydmd&ep=v1_gifs_search&rid=giphy.gif&ct=g
