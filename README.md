@@ -1,5 +1,5 @@
 # [Github Repository - BaseReader](https://github.com/ngcuongzth/BaseReaderPython.git)
-## `date release:2024/06/21`
+## `date release:2024/06/22`
 
 ![][def3]
 
@@ -145,15 +145,29 @@ if data_decoded:
 
 ![][def4]
 
-### `Nhận xét chung:` `useQreader()` cho trải khả năng đọc mã tốt hơn so với thư viện khác, đổi lại tốc độ của nó chậm hơn `~0.2s` thay vì `< 0.1s` như các thư viện khác, tùy dự án chúng ta sẽ  `custom` lại
+### `Nhận xét chung:`  
 
-- **useQReader**: đọc mã bằng `qreader`
-- **useWeChatQRCode**: đọc mã bằng `WechatQRCode`
-- **usePyzbar**: đọc mã bằng `pyzbar`
-- **useZxingCpp**: đọc mã bằng `useZxingCpp`
-- **useLoopReader**: đọc mã với hàm loop (`custom`)
+- **useQReader**: đọc mã bằng `qreader` (vừa detect, vừa decode - tốc độ ~ 0.2s)
+- **useWeChatQRCode**: đọc mã bằng `WechatQRCode` (hàm đọc mã thường)
+- **usePyzbar**: đọc mã bằng `pyzbar` (hàm đọc mã thường)
+- **useZxingCpp**: đọc mã bằng `useZxingCpp`  (hàm đọc mã thường)
+- **useLoopReader**: đọc mã với hàm loop (`custom`) 
 - **getRectQReader**: lấy tọa độ của qrcode trong ảnh `(x1,y1,x2,y2)`
-- **useQReaderProcessorDecode**: đọc mã với hàm xử lý ảnh của `qreader`, đầu vào là một ảnh, đầu ra là dữ liệu
+- **useQReaderProcessorDecode**: đọc mã với hàm xử lý ảnh của `qreader`
+        
+    **input**:
+        + `image`: một ảnh đầu vào (recommend: ảnh đã crop)
+        + `type`: giá trị từ ` 1 đến 3 ` với 
+            
+    + `1`: đọc bằng `WechatQRCode`
+    + `2`: đọc bằng `Zxingcpp`
+    + `3`: đọc bằng `Pyzbar`
+
+    **output**: mã được `decode`
+
+
+        
+
 
 
 
