@@ -5,6 +5,10 @@ QRCode Processor
 @last&update: 2024/06/20
 """
 
+# import sys, os
+
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from qreader.qreader import QReader
 import cv2
 from core.InitModels import init_wechatqrcode

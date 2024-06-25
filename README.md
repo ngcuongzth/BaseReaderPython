@@ -180,3 +180,9 @@ if data_decoded:
 
 [def4]: https://media.giphy.com/media/JRE3AvLsSRXg360F6l/giphy.gif?cid=790b7611njge3hnmfbejhl6o2dqr9a3ll8v3i9sktx9qbkgg&ep=v1_gifs_search&rid=giphy.gif&ct=g
 [def3]: https://media.giphy.com/media/YFkpsHWCsNUUo/giphy.gif?cid=790b76112rxv4oztdntme277p6md8743qrnzoqvgaaiaydmd&ep=v1_gifs_search&rid=giphy.gif&ct=g
+
+
+
+
+[BUGS???]: - Loi tim thu muc, them dong nay vao cho import loi 
+`sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))`
