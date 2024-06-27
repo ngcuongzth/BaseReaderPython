@@ -143,6 +143,22 @@ if data_decoded:
 # ouput: => data and rect:  SD Team [108 112 408 411]
 ```
 
+
+
+`core/PreprocessorDecode.py.py`: `class đọc mã - sử dụng hàm tiền xử lý ảnh của Qreader (custom) + thư viện đọc mã`
+
+- **readQRCodeProcessor(`image`, `type`)**: hàm đọc mã `QRCode`, tham số đầu vào
+    `image`: hình ảnh
+    `type`: thư viện được sử dụng với giá trị (`1-3`):
+    
+        `1`: sử dụng thư viện `WeChat`
+
+        `2`: sử dụng thư viện `Zxingcpp`
+
+        `3`: sử dụng thư viện `Pyzbar`
+
+
+
 ![][def4]
 
 ### `Nhận xét chung:`  
@@ -159,18 +175,14 @@ if data_decoded:
         + `image`: một ảnh đầu vào (recommend: ảnh đã crop)
         + `type`: giá trị từ ` 1 đến 3 ` với 
             
+    
     + `1`: đọc bằng `WechatQRCode`
+    
     + `2`: đọc bằng `Zxingcpp`
+    
     + `3`: đọc bằng `Pyzbar`
 
     **output**: mã được `decode`
-
-
-        
-
-
-
-
 
 
 [def]: https://media.giphy.com/media/v1.Y2lkPTc5MGINjExNG1ncG1pZWt1YTBxdXVjMWtydTJmcTkyb2Mxa2h6aWQ4MWhnOHp5YSZlcD12MV9naWZzXNlYXJjaCZjdD1n/4pMX5rJ4PYAEM/giphy.gif
@@ -184,5 +196,3 @@ if data_decoded:
 
 
 
-[BUGS???]: - Loi tim thu muc, them dong nay vao cho import loi 
-`sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))`
