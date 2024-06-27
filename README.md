@@ -169,6 +169,9 @@ if data_decoded:
 - **useZxingCpp**: đọc mã bằng `useZxingCpp`  (hàm đọc mã thường)
 - **useLoopReader**: đọc mã với hàm loop (`custom`) 
 - **getRectQReader**: lấy tọa độ của qrcode trong ảnh `(x1,y1,x2,y2)`
+
+`core/PreprocessorDecode.py`: `class đọc mã QRCode`
+
 - **useQReaderProcessorDecode**: đọc mã với hàm xử lý ảnh của `qreader`
         
     **input**:
