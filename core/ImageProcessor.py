@@ -280,7 +280,7 @@ class ImageProcessor:
         blur = cv2.GaussianBlur(image, kernel, sigmaX)
         return blur
 
-    def medianBlurImage(self, image: np.ndarray, kernel: tuple = (3, 3)):
+    def medianBlurImage(self, image: np.ndarray, kernel: int):
         blur = cv2.medianBlur(image, kernel)
         return blur
 
