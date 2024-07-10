@@ -5,6 +5,10 @@ QRCode Processor
 @last&update: 2024/06/20
 """
 
+# import sys, os
+
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from qreader.qreader import QReader
 import cv2
 from core.InitModels import init_wechatqrcode
@@ -76,36 +80,6 @@ class QRCodeProcessor:
             return data_decodeded[0].text
         return None
 
-    def useLoopReader(self, image: np.ndarray, iterations: int = 2, type: int = 1):
-        # def useLoopReader(self, image: np.ndarray):
-        """pass image: processed"""
-        if type == 1:
-            # read by QReader first
-            image = self.processor.useSuperResolution(image)
-            data_QReader, rect = self.useQReader(image, return_detections=True)
-
-            if data_QReader:
-                return data_QReader
-            else:
-                if rect is not None and len(rect) == 4:
-                    roi_image = self.processor.useRoiImage(image, rect, 10)
-                    # use roi to read by zxingcpp
-                    data_ZxingCpp = self.useZxingCpp(roi_image)
-                    if data_ZxingCpp:
-                        return data_ZxingCpp
-                    else:
-                        data_WeChat = self.useWeChatQRCode(roi_image)
-                        if data_WeChat:
-                            return data_WeChat
-                        else:
-                            data_Pyzbar = self.usePyzbar(roi_image)
-                            if data_Pyzbar:
-                                return data_Pyzbar
-                            else:
-                                return None
-                else:
-                    return None
-
     def getRectQReader(self, image: np.ndarray):
         rect = self.qreader.detect(image=image)
         if rect:
@@ -116,8 +90,29 @@ class QRCodeProcessor:
             return rect[0]["bbox_xyxy"]
         return None
 
-    def useDecodeQReaderPyzbar(self, cropImage: np.ndarray):
-        return self.qreader.decodeQRZbarCrop(cropImage)
+    def useQReaderProcessorDecode(self, cropImage, type: int = 1):
+        """type decode:\n
+        -> 1: use WeChatQRCode\n
+        -> 2: use ZxingCpp\n
+        -> 3: use Pyzbar\n
+        """
+        return self.qreader.readQRCodeProcessor(cropImage, type=type)
 
-    def useDecodeQReaderZxing(self, cropImage: np.ndarray):
-        return self.qreader.decodeQRZxingCrop(cropImage)
+    def useLoopReader(self, image: np.ndarray, iterations: int = 2):
+        # def useLoopReader(self, image: np.ndarray):
+
+        """
+        Custom lai o day
+        Su dung vong lap de read code
+        """
+
+        if iterations < 1:
+            raise Exception("So lan lap phai > 0")
+        while iterations > 0:
+            print("loop remaining: ", iterations)
+            # try read by Zxingpp
+            iterations = iterations - 1
+            data_decoded = self.useQReaderProcessorDecode(image, type=2)
+            if data_decoded:
+                return data_decoded
+        return None

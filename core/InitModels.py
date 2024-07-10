@@ -8,10 +8,10 @@ import cv2
 
 
 def init_dnn_superres():
-    path = "models/super_resolution/ESPCN_x2.pb"
+    path = "models/super_resolution/ESPCN_x3.pb"
     superres = cv2.dnn_superres.DnnSuperResImpl_create()
     superres.readModel(path)
-    superres.setModel("espcn", 2)
+    superres.setModel("espcn", 3)
     return superres
 
 
